@@ -1,6 +1,7 @@
 {
   "name": "company_quotes",
   "version": "0.1.0",
+  "homepage": "https://vladdof.github.io/company-quotes/",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
