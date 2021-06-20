@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.54b4bce50afa3a8b23fdbcb2c681b7b4.js"
+  "/company-quotes/precache-manifest.1fde6ab8fb5bbc98dc690e5abbeeb8f4.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "company_quotes"});
