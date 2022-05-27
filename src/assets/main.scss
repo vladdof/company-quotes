@@ -1,52 +1,26 @@
+html {
+    font-family: 'Open Sans', sans-serif;
+    background: #f6f6f6;
+}
 .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 40px 15px 50px;
-}
-.stock {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
 
-    &-item {
-        border: 1px solid #ccc;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        padding: 15px 20px;
-
-        &__info {
-            display: flex;
-            align-items: center;
-        }
-        &__cover {
-            flex: 0 0 20px;
-            margin-right: 15px;
-
-            img {
-                width: 100%;
-            }
-        }
-        &__title {
-            font-size: 14px;
-            color: #171717;
-            margin-top: 0;
-            margin-bottom: 0;
-
-            span {
-                margin-top: 5px;
-                display: block;
-                font-weight: 400;
-                font-size: 12px;
-                color: #858585;
-            }
-        }
-        &__price {
-            flex: 0 0 80px;
-            text-align: right;
-        }
+    h1 {
+        margin: 0;
+        margin-bottom: 20px;
+        font-weight: 700;
+        font-size: 65px;
+        line-height: 78px;
+        text-transform: capitalize;
+        color: #29a0f5;
     }
-}
-.info {
-    margin: 20px auto;
+    h3 {
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 32px;
+        text-transform: capitalize;
+        color: #1b2534;
+    }
 }
