@@ -1,18 +1,17 @@
 <template>
   <div class="container">
     <h1>Stocks App</h1>
-    <Stocks />
+    <stocks />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import Stocks from '@/components/Stocks.vue'
+import { Stocks } from '@/components';
 
 export default {
-  name: 'Home',
+  name: 'page-stocks',
   components: {
-    Stocks
-  }
-}
+    Stocks,
+  },
+};
 </script>
