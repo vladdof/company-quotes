@@ -3,25 +3,19 @@
     <h1>
       Stocks App {{ symbol }}
     </h1>
-    <ul>
-      <li
-        v-for="(value, key) in getSymbolStock"
-        :key="key"
-      >
-        {{ key }} -- {{ value }}
-      </li>
-    </ul>
+
+    <list-item :item="getSymbolStock" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import { Stocks } from '@/components';
+import { ListItem } from '@/components';
 
 export default {
   name: 'VStocks',
   components: {
-    Stocks,
+    ListItem,
   },
   props: {
     symbol: {
