@@ -7,7 +7,7 @@ export default {
         NAME: 'page-stocks',
     },
     STOCK: {
-        PATH: '/stock',
+        PATH: '/stock/:symbol',
         NAME: 'page-stock',
     },
 };
