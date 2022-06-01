@@ -10,6 +10,16 @@ const routes = [
       '@/views/page-stocks.vue'
     ),
   },
+  {
+    path: APP_ROUTES.STOCK.PATH,
+    name: APP_ROUTES.STOCK.NAME,
+    // which is lazy-loaded when the route is visited.
+    component: () => import(
+      /* webpackChunkName: "page-stock" */
+      '@/views/page-stock.vue'
+    ),
+    props: true,
+  },
 ];
 
 const router = createRouter({
