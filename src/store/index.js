@@ -171,3 +171,5 @@ export default createStore({
     },
   },
 });
+
+// https://financialmodelingprep.com/api/v3/stock/list?apikey=d8ed336ddcddad19f8ed0ab6333e6193
