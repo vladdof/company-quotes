@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["page-stocks"],{"41a1":function(c,t,n){"use strict";n.r(t);var e=n("7a23"),s={class:"container"},o=Object(e["g"])("h1",null,"Stocks App",-1);function a(c,t,n,a,p,r){var b=Object(e["v"])("stocks");return Object(e["q"])(),Object(e["f"])("div",s,[o,Object(e["h"])(b)])}var p=n("2af9"),r={name:"page-stocks",components:{Stocks:p["b"]}},b=n("6b0d"),i=n.n(b);const k=i()(r,[["render",a]]);t["default"]=k}}]);
-//# sourceMappingURL=page-stocks.184e5504.js.map
