@@ -7,18 +7,13 @@
       v-for="item in stocks"
       :key="item.companyName"
       :item="item"
-      @click="open(item)"
+      @click="openStock(item)"
     />
   </div>
 
   <h3>Get info</h3>
   <select v-model="selected">
-    <option
-      value
-      disabled
-    >
-      Select Company
-    </option>
+    <option value disabled>Select Company</option>
     <option
       v-for="stock in stocks"
       :key="stock.description"
@@ -28,62 +23,66 @@
     </option>
   </select>
 
-  <div
-    v-show="selected"
-    class="stock__info"
-  >
+  <div v-show="selected" class="stock__info">
     {{ selected.description }}
   </div>
 </template>
 
-<script>
-  import { mapActions, mapGetters } from 'vuex';
-  import config from '../../config';
-  import StocksItem from './stocks-item.vue';
+<script lang="ts">
+import { defineComponent, computed, ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
-  export default {
-    name: 'stocks',
-    components: {
-      StocksItem,
-    },
-    created() {
-      this.fetchStocks();
-    },
-    data() {
-      return {
-        selected: '',
-        companies: config.companies,
-        errors: [],
-        loading: false,
+import config from '../../config';
+import StocksItem from './stocks-item.vue';
 
-        tag: '',
-      };
-    },
-    computed: {
-      ...mapGetters({ stocks: 'getStocks' }),
-    },
-    methods: {
-      ...mapActions(['fetchDataStocks']),
+export default defineComponent({
+  name: 'stocks',
+  components: {
+    StocksItem,
+  },
+  setup() {
+    // data
+    const selected = ref('');
+    const companies = ref(config.companies);
+    const errors = ref([]);
+    const loading = ref(false);
 
-      fetchStocks() {
-        this.loading = true;
+    // getters
+    const store = useStore();
+    // computed
+    const stocks = computed(() => store.getters.getStocks);
 
-        this.companies
-          .map((symbol) => {
-            this.fetchDataStocks({ symbol })
-              .catch((error) => this.errors.push(error))
-              .finally(() => (this.loading = false));
-          })
-      },
-      open(item) {
-        this.$router.push({
-          name: 'page-stock',
-          params: { symbol: item.symbol },
-        });
-        this.tag = '';
-      },
-    },
-  };
+    const fetchStocks = function () {
+      loading.value = true;
+
+      companies.value.map((symbol: string) => {
+        store
+          .dispatch('fetchDataStocks', { symbol })
+          .catch((error) => errors.value.push(error))
+          .finally(() => (loading.value = false));
+      });
+    };
+    fetchStocks();
+
+    const router = useRouter();
+    const openStock = (item) => {
+      router.push({
+        name: 'page-stock',
+        params: { symbol: item.symbol },
+      });
+    };
+
+    return {
+      stocks,
+      selected,
+      companies,
+      errors,
+      loading,
+      openStock,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

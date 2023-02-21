@@ -8,27 +8,42 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex';
+<script lang="ts">
+import { defineComponent, computed } from 'vue';
+import { useStore } from 'vuex';
 import { ListItem } from '@/components';
 
-export default {
-  name: 'VStocks',
+const fetcStock = (dispatch, symbol) => {
+  return dispatch('fetchDataStocks', { symbol });
+};
+
+export default defineComponent({
+  name: 'page-stock',
   components: {
     ListItem,
   },
   props: {
     symbol: {
       type: String,
-      default: '',
+      required: true,
     },
   },
-  computed: {
-    ...mapGetters(['getStocks']),
+  setup(props) {
+    const { getters, dispatch } = useStore();
 
-    getSymbolStock() {
-      return this.getStocks.find((stock) => stock.symbol === this.symbol);
-    },
+    const getSymbolStock = computed(() => {
+      return getters.getStocks.find(
+        (stock: { symbol: string }) => stock.symbol === props.symbol
+      );
+    });
+
+    if (!getSymbolStock.value) {
+      fetcStock(dispatch, props.symbol);
+    }
+
+    return {
+      getSymbolStock,
+    };
   },
-};
+})
 </script>
