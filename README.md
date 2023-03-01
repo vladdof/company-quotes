@@ -1,7 +1,9 @@
 # company_quotes
 Использую апи данного портала https://site.financialmodelingprep.com/
 
-Доступная ссылка https://vladdof.github.io/company-quotes/
+Новая ссылка приложения https://company-quotes.onrender.com/
+
+Есть ссылка и на github pages https://vladdof.github.io/company-quotes/, но там не работает правильно роутинг на клиенте.
 &nbsp;
 &nbsp;
 ### Приступая к работе
