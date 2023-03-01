@@ -1,6 +1,6 @@
 export default {
   apiUrl: 'https://financialmodelingprep.com/api',
-  apiKey: 'd8ed336ddcddad19f8ed0ab6333e6193',
+  apiKey: process.env.API_KEY,
   companies: [
     'BABA',
     'AAPL',
