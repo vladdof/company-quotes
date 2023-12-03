@@ -4,6 +4,10 @@ import { setLoading } from '@/lib/set-loading';
 import axios from 'axios';
 import { IStore, GetStocksResponse } from '@/models';
 
+import { StockService } from '@/lib/storage-service';
+
+const stockStorage = new StockService();
+
 export default createStore<IStore>({
   state: {
     stocks: [],
@@ -54,8 +58,19 @@ export default createStore<IStore>({
 
       await setLoading(async () => {
         try {
-          const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
-          commit('addStocks', data[0]);
+          const stock = stockStorage.get(symbol);
+          console.log(stock);
+
+          if (stock) {
+            console.log(1, symbol, stockStorage);
+
+            commit('addStocks', stock);
+          } else {
+            console.log(2, symbol);
+            const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+            commit('addStocks', data[0]);
+            stockStorage.set(symbol, data[0]);
+          }
         } catch (error) {
           if (axios.isAxiosError(error)) {
             return error.message;
