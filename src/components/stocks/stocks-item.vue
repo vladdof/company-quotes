@@ -20,12 +20,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import type { PropType } from 'vue';
+import { IStocks } from '@/models';
+
 export default defineComponent({
   name: 'stock-item',
   props: {
     item: {
-      type: Object,
-      default: ({}),
+      type: Object as PropType<IStocks>,
+      default: () => ({}),
     },
   },
 });
