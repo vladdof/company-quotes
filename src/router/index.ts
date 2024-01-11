@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 import { APP_ROUTES } from '@/constants';
 
-const routes = [
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    redirect: { name: APP_ROUTES.ROOT.NAME },
+  },
   {
     path: APP_ROUTES.ROOT.PATH,
     name: APP_ROUTES.ROOT.NAME,
@@ -18,6 +23,11 @@ const routes = [
       '@/views/page-stock.vue'
     ),
     props: true,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404',
+    redirect: { name: APP_ROUTES.ROOT.NAME },
   },
 ];
 
