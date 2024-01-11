@@ -10,7 +10,6 @@ class StorageService {
   }
 
   get(key) {
-    console.log(3, JSON.parse(this._storage.getItem(key)));
     return JSON.parse(this._storage.getItem(key));
   }
 
@@ -39,7 +38,6 @@ export class StockService extends StorageService {
   }
 
   set(symbol, stock) {
-    console.log(StockService.KEY, 'set(symbol, stock');
     super.set(`${StockService.KEY}-${symbol}`, stock);
   }
 
