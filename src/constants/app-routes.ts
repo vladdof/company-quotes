@@ -1,6 +1,6 @@
 export default {
   ROOT: {
-    PATH: '/',
+    PATH: '/stocks',
     NAME: 'page-stocks',
   },
   STOCK: {
