@@ -1,10 +1,4 @@
-interface IStocks {
-  image: string;
-  companyName: string;
-  price: string;
-  symbol: string;
-};
-
+import { IStocks } from './stocks';
 
 export type GetStocksResponse = {
   data: IStocks[];
