@@ -1,6 +1,6 @@
 <template>
   <div class="stock">
-    <div v-if="loading">Loading...</div>
+    <div v-if="isLoading">Loading stocks...</div>
 
     <stocks-item
       v-else
@@ -10,30 +10,14 @@
       @click="openStock(item)"
     />
   </div>
-
-  <h3>Get info</h3>
-  <select v-model="selected">
-    <option value disabled>Select Company</option>
-    <option
-      v-for="stock in stocks"
-      :key="stock.description"
-      :value="{ description: stock.description, symbol: stock.symbol }"
-    >
-      {{ stock.companyName }}
-    </option>
-  </select>
-
-  <div v-show="selected" class="stock__info">
-    {{ selected.description }}
-  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
-import { useStore } from 'vuex';
+import { defineComponent } from 'vue';
+import type { PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
-import config from '../../config';
+import { IStocks } from '@/models';
 import StocksItem from './stocks-item.vue';
 
 export default defineComponent({
@@ -41,30 +25,17 @@ export default defineComponent({
   components: {
     StocksItem,
   },
+  props: {
+    stocks: {
+      type: Array as PropType<IStocks[]>,
+      required: true,
+    },
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
-    // data
-    const selected = ref('');
-    const companies = ref(config.companies);
-    const errors = ref([]);
-    const loading = ref(false);
-
-    // getters
-    const store = useStore();
-    // computed
-    const stocks = computed(() => store.getters.getStocks);
-
-    const fetchStocks = function () {
-      loading.value = true;
-
-      companies.value.map((symbol: string) => {
-        store
-          .dispatch('fetchDataStocks', { symbol })
-          .catch((error) => errors.value.push(error))
-          .finally(() => (loading.value = false));
-      });
-    };
-    fetchStocks();
-
     const router = useRouter();
     const openStock = (item) => {
       router.push({
@@ -74,11 +45,6 @@ export default defineComponent({
     };
 
     return {
-      stocks,
-      selected,
-      companies,
-      errors,
-      loading,
       openStock,
     };
   },
