@@ -17,6 +17,9 @@ export default createStore<IStore>({
     isLoading: false,
   },
   getters: {
+    isLoading(state) {
+      return state.isLoading;
+    },
     getStocks(state) {
       return state.stocks;
     },
@@ -53,23 +56,22 @@ export default createStore<IStore>({
     },
   },
   actions: {
-    async fetchDataStocks({ commit }, { symbol }) {
+    async fetchDataStocks({ commit }, companies) {
       commit('setDefaultStocks');
+      const payload = typeof companies === 'string' ? [companies] : companies.value;
 
       await setLoading(async () => {
         try {
-          const stock = stockStorage.get(symbol);
-          console.log(stock);
+          for (const symbol of payload) {
+            const stock = stockStorage.get(symbol);
 
-          if (stock) {
-            console.log(1, symbol, stockStorage);
-
-            commit('addStocks', stock);
-          } else {
-            console.log(2, symbol);
-            const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
-            commit('addStocks', data[0]);
-            stockStorage.set(symbol, data[0]);
+            if (stock !== 'undefined' && stock) {
+              commit('addStocks', stock);
+            } else {
+              const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+              commit('addStocks', data[0]);
+              stockStorage.set(symbol, data[0]);
+            }
           }
         } catch (error) {
           if (axios.isAxiosError(error)) {
