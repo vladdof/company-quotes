@@ -13,8 +13,8 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { ListItem } from '@/components';
 
-const fetcStock = (dispatch, symbol) => {
-  return dispatch('fetchDataStocks', { symbol });
+const fetchStock = (dispatch, symbol) => {
+  return dispatch('fetchDataStocks', symbol);
 };
 
 export default defineComponent({
@@ -38,7 +38,7 @@ export default defineComponent({
     });
 
     if (!getSymbolStock.value) {
-      fetcStock(dispatch, props.symbol);
+      fetchStock(dispatch, props.symbol);
     }
 
     return {
