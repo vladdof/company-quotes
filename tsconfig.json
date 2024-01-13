@@ -13,7 +13,8 @@
         "moduleResolution": "node",
         "baseUrl": "./",
         "types": [
-            "webpack-env"
+            "webpack-env",
+            "vite/client"
         ],
         "paths": {
             "@/*": [
