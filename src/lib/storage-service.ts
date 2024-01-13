@@ -1,6 +1,6 @@
 class StorageService {
   _storage;
-  constructor(storage) {
+  constructor(storage: Storage) {
     if (!storage || !(storage instanceof Storage)) {
       throw new Error(
         'storage arg is not an instance of the Storage or undefined',
@@ -9,15 +9,15 @@ class StorageService {
     this._storage = storage;
   }
 
-  get(key) {
+  get(key: string) {
     return JSON.parse(this._storage.getItem(key));
   }
 
-  set(key, value) {
+  set(key: string, value) {
     this._storage.setItem(key, JSON.stringify(value));
   }
 
-  remove(key) {
+  remove(key: string) {
     this._storage.removeItem(key);
   }
 
@@ -33,11 +33,11 @@ export class StockService extends StorageService {
     super(localStorage);
   }
 
-  get(symbol) {
+  get(symbol: string) {
     return super.get(`${StockService.KEY}-${symbol}`);
   }
 
-  set(symbol, stock) {
+  set(symbol: string, stock) {
     super.set(`${StockService.KEY}-${symbol}`, stock);
   }
 

@@ -1,4 +1,4 @@
-export const setLoading = async (action, commit, mutationName) => {
+export const setLoading = async (action, commit, mutationName: string) => {
   try {
     commit(mutationName, true);
     await action();
