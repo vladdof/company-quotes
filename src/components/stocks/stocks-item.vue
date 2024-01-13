@@ -3,7 +3,7 @@
     <div class="stock-item__info">
       <div class="stock-item__cover">
         <img :src="item.image" :alt="item.companyName" />
-        <div class="stock-item__price">${{ item.price }}</div>
+        <div v-if="item.price" class="stock-item__price">${{ item.price }}</div>
       </div>
       <div>
         <h4 class="stock-item__title">
