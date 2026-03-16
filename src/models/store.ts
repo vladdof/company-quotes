@@ -4,4 +4,5 @@ export default interface IStore {
   quote: object[];
   forex: {};
   isLoading: boolean;
+  favorites: string[];
 }
