@@ -66,8 +66,6 @@
       :is-loading="isLoading"
     />
 
-    <additional-info :stocks="stocks" />
-
     <nav class="page-stocks__mobile-nav" aria-label="Мобильная навигация">
       <button
         class="page-stocks__mobile-nav-btn"
@@ -115,13 +113,12 @@
 <script lang="ts">
 import { defineComponent, computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
-import { Stocks, AdditionalInfo, SearchBar, ThemeToggle } from '@/components';
+import { Stocks, SearchBar, ThemeToggle } from '@/components';
 
 export default defineComponent({
   name: 'page-stocks',
   components: {
     Stocks,
-    AdditionalInfo,
     SearchBar,
     ThemeToggle,
   },
