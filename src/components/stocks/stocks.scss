@@ -11,7 +11,40 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
+  &__loading {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #606060;
+    font-size: 15px;
+    padding: 20px 0;
+  }
+
+  &__loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e6ef;
+    border-top-color: #29a0f5;
+    border-radius: 50%;
+    animation: stock-spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes stock-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    color: #aab0bd;
+    font-size: 15px;
+    padding: 40px 0;
+    text-align: center;
+  }
+
   &-item {
+    position: relative;
     display: flex;
     align-items: center;
     padding: 15px 20px;
@@ -23,6 +56,36 @@
     &:hover {
       box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.07);
       transition: box-shadow .3s ease;
+    }
+
+    &__favorite {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #d1d5db;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      transition: color 0.2s ease, background 0.2s ease;
+      z-index: 1;
+
+      &:hover {
+        color: #f5a623;
+        background: rgba(245, 166, 35, 0.1);
+      }
+
+      &--active {
+        color: #f5a623;
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
     }
 
     &__info {

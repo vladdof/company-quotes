@@ -15,6 +15,7 @@ export default createStore<IStore>({
     quote: [],
     forex: {},
     isLoading: false,
+    favorites: JSON.parse(localStorage.getItem('favorites') || '[]') as string[],
   },
   getters: {
     isLoading(state) {
@@ -31,6 +32,12 @@ export default createStore<IStore>({
     },
     getForex(state) {
       return state.forex;
+    },
+    getFavorites(state) {
+      return state.favorites;
+    },
+    isFavorite: (state) => (symbol: string) => {
+      return state.favorites.includes(symbol);
     },
   },
   mutations: {
@@ -53,6 +60,15 @@ export default createStore<IStore>({
     },
     setLoading(state, isLoading) {
       state.isLoading = isLoading;
+    },
+    toggleFavorite(state, symbol: string) {
+      const index = state.favorites.indexOf(symbol);
+      if (index === -1) {
+        state.favorites.push(symbol);
+      } else {
+        state.favorites.splice(index, 1);
+      }
+      localStorage.setItem('favorites', JSON.stringify(state.favorites));
     },
   },
   actions: {

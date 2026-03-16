@@ -1,21 +1,31 @@
 <template>
   <div class="stock">
-    <div v-if="isLoading">Loading stocks...</div>
+    <div v-if="isLoading" class="stock__loading">
+      <div class="stock__loading-spinner"></div>
+      <span>Загрузка акций...</span>
+    </div>
 
     <stocks-item
       v-else
       v-for="item in stocks"
-      :key="item.companyName"
+      :key="item.symbol"
       :item="item"
+      :is-favorite="isFavoriteStock(item.symbol)"
+      @toggle-favorite="toggleFavorite"
       @click="openStock(item)"
     />
+
+    <div v-if="!isLoading && stocks.length === 0" class="stock__empty">
+      <span>Нет акций для отображения</span>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import type { PropType } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 import { IStocks } from '@/models';
 import StocksItem from './stocks-item.vue';
@@ -37,7 +47,18 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const openStock = (item) => {
+    const store = useStore();
+
+    const favorites = computed(() => store.getters.getFavorites);
+
+    const isFavoriteStock = (symbol: string): boolean =>
+      favorites.value.includes(symbol);
+
+    const toggleFavorite = (symbol: string) => {
+      store.commit('toggleFavorite', symbol);
+    };
+
+    const openStock = (item: IStocks) => {
       router.push({
         name: 'page-stock',
         params: { symbol: item.symbol },
@@ -46,6 +67,8 @@ export default defineComponent({
 
     return {
       openStock,
+      isFavoriteStock,
+      toggleFavorite,
     };
   },
 });
@@ -54,3 +77,4 @@ export default defineComponent({
 <style lang="scss">
   @import 'stocks';
 </style>
+
