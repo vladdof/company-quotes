@@ -1,3 +1,3 @@
 export { default as IStore } from './store';
 export { GetStocksResponse } from './get-response';
-export { IStocks } from './stocks';
+export { IStocks, INews } from './stocks';

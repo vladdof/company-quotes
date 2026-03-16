@@ -10,8 +10,22 @@ export interface IStocks {
   exchange?: string;
   currency?: string;
   changes?: number;
+  changesPercentage?: number;
   country?: string;
   ceo?: string;
   mktCap?: number;
+  marketCap?: number;
   fullTimeEmployees?: string;
+  sparkline?: number[];
 };
+
+export interface INews {
+  title: string;
+  url: string;
+  publishedDate: string;
+  image?: string;
+  site?: string;
+  text?: string;
+  symbol?: string;
+}
+

@@ -1,12 +1,35 @@
+:root {
+  --color-bg: #f6f6f6;
+  --color-surface: #ffffff;
+  --color-text-primary: #171717;
+  --color-text-secondary: #606060;
+  --color-border: #e0e6ef;
+  --color-skeleton: #e9edf3;
+  --color-shadow: rgba(0, 0, 0, 0.06);
+  --color-accent: #29a0f5;
+}
+
+html.dark {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-text-primary: #f0f4ff;
+  --color-text-secondary: #8b95a8;
+  --color-border: #2d3244;
+  --color-skeleton: #252838;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-accent: #29a0f5;
+}
+
 html {
   font-family: 'Open Sans', sans-serif;
-  background: #f6f6f6;
+  background: var(--color-bg);
+  transition: background 0.3s ease;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 15px 50px;
+  padding: 40px 15px 100px;
 
   h1 {
     margin: 0;
@@ -24,10 +47,15 @@ html {
     font-size: 20px;
     line-height: 32px;
     text-transform: capitalize;
-    color: #1b2534;
+    color: var(--color-text-primary);
   }
 }
 
 select {
   cursor: pointer;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }

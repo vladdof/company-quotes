@@ -1,9 +1,14 @@
 <template>
   <div class="stock">
-    <div v-if="isLoading" class="stock__loading">
-      <div class="stock__loading-spinner"></div>
-      <span>Загрузка акций...</span>
-    </div>
+    <template v-if="isLoading">
+      <div v-for="i in 8" :key="i" class="stock__skeleton">
+        <div class="stock__skeleton-img"></div>
+        <div class="stock__skeleton-body">
+          <div class="stock__skeleton-line stock__skeleton-line--wide"></div>
+          <div class="stock__skeleton-line"></div>
+        </div>
+      </div>
+    </template>
 
     <stocks-item
       v-else
