@@ -217,7 +217,7 @@ export default createStore<IStore>({
               commit('addStocks', cached);
             } else {
               try {
-                const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+                const { data } = await http.get<GetStocksResponse>('profile', { params: { symbol } });
                 if (data && data[0]) {
                   commit('addStocks', data[0]);
                   stockStorage.set(symbol, data[0]);
@@ -237,7 +237,7 @@ export default createStore<IStore>({
                 commit('addStocks', cached);
               } else {
                 try {
-                  const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+                  const { data } = await http.get<GetStocksResponse>('profile', { params: { symbol } });
                   if (data && data[0]) {
                     commit('addStocks', data[0]);
                     stockStorage.set(symbol, data[0]);
@@ -265,7 +265,7 @@ export default createStore<IStore>({
             if (stock !== 'undefined' && stock) {
               commit('addStocks', stock);
             } else {
-              const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+              const { data } = await http.get<GetStocksResponse>('profile', { params: { symbol } });
               commit('addStocks', data[0]);
               stockStorage.set(symbol, data[0]);
             }
@@ -286,7 +286,7 @@ export default createStore<IStore>({
         const batchSize = BATCH_QUOTE_SIZE;
         for (let i = 0; i < symbols.length; i += batchSize) {
           const batch = symbols.slice(i, i + batchSize).join(',');
-          const { data } = await http.get(`quote/${batch}`);
+          const { data } = await http.get('quote', { params: { symbol: batch } });
           if (Array.isArray(data)) {
             commit('updateStockPrices', data.map((q: Record<string, unknown>) => ({
               symbol: q.symbol as string,
@@ -315,8 +315,8 @@ export default createStore<IStore>({
     },
     async fetchSparkline({ commit }, symbol: string) {
       try {
-        const { data } = await http.get(`historical-price-full/${symbol}`, {
-          params: { serietype: 'line', timeseries: 14 },
+        const { data } = await http.get('historical-price-full', {
+          params: { symbol, serietype: 'line', timeseries: 14 },
         });
         if (data && data.historical && Array.isArray(data.historical)) {
           const prices: number[] = data.historical
@@ -333,7 +333,7 @@ export default createStore<IStore>({
       commit('setLoadingNews', true);
       commit('setNews', []);
       try {
-        const { data } = await http.get('stock_news', {
+        const { data } = await http.get('news/stock-latest', {
           params: { tickers: symbol, limit: 8 },
         });
         commit('setNews', Array.isArray(data) ? data : []);
@@ -345,7 +345,7 @@ export default createStore<IStore>({
     },
     async fetchFx({ commit }) {
       try {
-        const { data} = await http.get('fx/EURUSD');
+        const { data} = await http.get('news/forex-latest', { params: { page: 0, limit: 20 } });
         commit('addFx', data);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -356,7 +356,7 @@ export default createStore<IStore>({
       }
     },
     fetchQuote({ commit }) {
-      return http.get('quote/BTCUSD')
+      return http.get('quote', { params: { symbol: 'BTCUSD' } })
         .then((response) => {
           if (!response.data['Error Message']) {
             commit('addQuote', response.data[0]);
@@ -364,7 +364,7 @@ export default createStore<IStore>({
         });
     },
     fetchForex({ commit }) {
-      return http.get('forex')
+      return http.get('news/forex-latest', { params: { page: 0, limit: 20 } })
         .then((response) => {
           if (!response.data['Error Message']) {
             commit('addForex', response.data[0]);
