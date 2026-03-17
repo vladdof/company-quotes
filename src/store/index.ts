@@ -8,10 +8,15 @@ import { StockService } from '@/lib/storage-service';
 
 const stockStorage = new StockService();
 
-const SCREENER_LIMIT = 50;
+const SCREENER_LIMIT = 20;
 const SCREENER_MIN_MARKET_CAP = 50000000000;
 const POLL_INTERVAL_MS = 60000;
 const BATCH_QUOTE_SIZE = 50;
+
+const TOP_20_POPULAR_STOCKS = [
+  'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA',
+  'JPM', 'V', 'UNH', 'JNJ', 'MA', 'XOM', 'PG', 'HD', 'CVX', 'ABBV', 'MRK', 'PEP', 'WMT',
+];
 
 const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
 
@@ -163,9 +168,11 @@ export default createStore<IStore>({
     },
   },
   actions: {
-    async fetchStockList({ commit, dispatch }) {
+    async fetchStockList({ commit, dispatch, state }) {
+      const favorites = state.favorites as string[];
       commit('setDefaultStocks');
       await setLoading(async () => {
+        let screenerSuccess = false;
         try {
           const { data } = await http.get('stock-screener', {
             params: {
@@ -175,30 +182,75 @@ export default createStore<IStore>({
               limit: SCREENER_LIMIT,
             },
           });
-          const stocks: IStocks[] = (data as Array<Record<string, unknown>>).map((item) => ({
-            symbol: item.symbol as string,
-            companyName: item.companyName as string,
-            price: String(item.price ?? ''),
-            image: `https://financialmodelingprep.com/image-stock/${item.symbol}.png`,
-            sector: item.sector as string | undefined,
-            industry: item.industry as string | undefined,
-            exchange: item.exchange as string | undefined,
-            country: item.country as string | undefined,
-            marketCap: item.marketCap as number | undefined,
-            mktCap: item.marketCap as number | undefined,
-            changes: undefined,
-            changesPercentage: undefined,
-          }));
-
-          stocks.forEach((stock) => commit('addStocks', stock));
-          dispatch('refreshPrices');
+          if (Array.isArray(data) && data.length > 0) {
+            const stocks: IStocks[] = (data as Array<Record<string, unknown>>).map((item) => ({
+              symbol: item.symbol as string,
+              companyName: item.companyName as string,
+              price: String(item.price ?? ''),
+              image: `https://financialmodelingprep.com/image-stock/${item.symbol}.png`,
+              sector: item.sector as string | undefined,
+              industry: item.industry as string | undefined,
+              exchange: item.exchange as string | undefined,
+              country: item.country as string | undefined,
+              marketCap: item.marketCap as number | undefined,
+              mktCap: item.marketCap as number | undefined,
+              changes: undefined,
+              changesPercentage: undefined,
+            }));
+            stocks.forEach((stock) => commit('addStocks', stock));
+            screenerSuccess = true;
+          }
         } catch (error) {
           if (axios.isAxiosError(error)) {
-            return error.message;
+            console.error('fetchStockList -- screener error: ', error.message);
           } else {
             console.error('fetchStockList -- unexpected error: ', error);
           }
         }
+
+        if (!screenerSuccess) {
+          // Screener failed or returned no data: load top 20 popular stocks + favorites from cache/API
+          const symbolsToLoad = [...new Set([...TOP_20_POPULAR_STOCKS, ...favorites])];
+          for (const symbol of symbolsToLoad) {
+            const cached = stockStorage.get(symbol);
+            if (cached && cached !== 'undefined') {
+              commit('addStocks', cached);
+            } else {
+              try {
+                const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+                if (data && data[0]) {
+                  commit('addStocks', data[0]);
+                  stockStorage.set(symbol, data[0]);
+                }
+              } catch (e) {
+                console.error(`fetchStockList -- error loading ${symbol}: `, e);
+              }
+            }
+          }
+        } else {
+          // Screener succeeded: also ensure any favorites not in the list are loaded
+          const loadedSymbols = new Set((state.stocks as IStocks[]).map((s) => s.symbol));
+          for (const symbol of favorites) {
+            if (!loadedSymbols.has(symbol)) {
+              const cached = stockStorage.get(symbol);
+              if (cached && cached !== 'undefined') {
+                commit('addStocks', cached);
+              } else {
+                try {
+                  const { data } = await http.get<GetStocksResponse>(`profile/${symbol}`);
+                  if (data && data[0]) {
+                    commit('addStocks', data[0]);
+                    stockStorage.set(symbol, data[0]);
+                  }
+                } catch (e) {
+                  console.error(`fetchStockList -- error loading favorite ${symbol}: `, e);
+                }
+              }
+            }
+          }
+        }
+
+        dispatch('refreshPrices');
       }, commit, 'setLoading');
     },
     async fetchDataStocks({ commit }, companies) {
