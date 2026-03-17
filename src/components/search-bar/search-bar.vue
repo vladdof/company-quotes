@@ -19,8 +19,15 @@
         @keydown.enter.prevent="selectActive"
         @focus="isOpen = true"
       />
+      <div v-if="isSearching" class="search-bar__searching" aria-label="Поиск...">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="56" stroke-dashoffset="20">
+            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
       <button
-        v-if="query"
+        v-else-if="query"
         class="search-bar__clear"
         type="button"
         title="Очистить поиск"
@@ -34,13 +41,13 @@
     </div>
 
     <div
-      v-if="isOpen && filteredStocks.length > 0"
+      v-if="isOpen && allResults.length > 0"
       class="search-bar__dropdown"
       role="listbox"
       aria-label="Результаты поиска"
     >
       <div
-        v-for="(stock, index) in filteredStocks"
+        v-for="(stock, index) in allResults"
         :key="stock.symbol"
         class="search-bar__item"
         :class="{ 'search-bar__item--active': activeIndex === index }"
@@ -54,15 +61,17 @@
           :src="stock.image"
           :alt="stock.companyName"
           class="search-bar__item-image"
+          @error="onImgError"
         />
         <div v-else class="search-bar__item-image-placeholder">
           {{ stock.symbol ? stock.symbol[0] : '?' }}
         </div>
         <div class="search-bar__item-info">
-          <span class="search-bar__item-name">{{ stock.companyName }}</span>
+          <span class="search-bar__item-name">{{ stock.companyName || stock.name }}</span>
           <span class="search-bar__item-symbol">{{ stock.symbol }}</span>
         </div>
         <span v-if="stock.price" class="search-bar__item-price">${{ stock.price }}</span>
+        <span v-if="!isInCurrentList(stock.symbol)" class="search-bar__item-add">+ добавить</span>
       </div>
     </div>
 
@@ -147,6 +156,14 @@
         <button class="search-bar__info-btn" type="button" @click="viewStock">
           Подробнее →
         </button>
+        <button
+          v-if="!isInCurrentList(selectedStock.symbol)"
+          class="search-bar__info-btn search-bar__info-btn--secondary"
+          type="button"
+          @click="addToList"
+        >
+          + Добавить в список
+        </button>
       </div>
     </div>
   </div>
@@ -156,7 +173,11 @@
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import type { PropType } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import { IStocks } from '@/models';
+import http from '@/lib/http-common';
+
+const SEARCH_DEBOUNCE_MS = 350;
 
 export default defineComponent({
   name: 'search-bar',
@@ -168,6 +189,7 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
+    const store = useStore();
     const inputRef = ref<HTMLInputElement | null>(null);
     const searchBarRef = ref<HTMLElement | null>(null);
     const query = ref('');
@@ -175,6 +197,9 @@ export default defineComponent({
     const isFocused = ref(false);
     const activeIndex = ref(-1);
     const selectedStock = ref<IStocks | null>(null);
+    const apiResults = ref<IStocks[]>([]);
+    const isSearching = ref(false);
+    let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
     const filteredStocks = computed(() => {
       const q = query.value.trim().toLowerCase();
@@ -186,9 +211,48 @@ export default defineComponent({
       );
     });
 
-    watch(query, () => {
+    const allResults = computed(() => {
+      if (!query.value.trim()) return filteredStocks.value;
+      const localSymbols = new Set(filteredStocks.value.map((s) => s.symbol));
+      const extras = apiResults.value.filter((r) => !localSymbols.has(r.symbol));
+      return [...filteredStocks.value, ...extras];
+    });
+
+    const isInCurrentList = (symbol: string) => {
+      return props.stocks.some((s) => s.symbol === symbol);
+    };
+
+    const searchApi = async (q: string) => {
+      if (!q || q.length < 2) {
+        apiResults.value = [];
+        return;
+      }
+      isSearching.value = true;
+      try {
+        const { data } = await http.get('search', {
+          params: { query: q, limit: 10, exchange: 'NASDAQ,NYSE' },
+        });
+        apiResults.value = Array.isArray(data)
+          ? data.map((r: Record<string, unknown>) => ({
+              symbol: r.symbol as string,
+              companyName: (r.name as string) || (r.symbol as string),
+              price: '',
+              image: `https://financialmodelingprep.com/image-stock/${r.symbol}.png`,
+              exchange: r.exchangeShortName as string | undefined,
+            }))
+          : [];
+      } catch {
+        apiResults.value = [];
+      } finally {
+        isSearching.value = false;
+      }
+    };
+
+    watch(query, (newQ) => {
       activeIndex.value = -1;
       isOpen.value = true;
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => searchApi(newQ), SEARCH_DEBOUNCE_MS);
     });
 
     const close = () => {
@@ -200,12 +264,13 @@ export default defineComponent({
     const clear = () => {
       query.value = '';
       selectedStock.value = null;
+      apiResults.value = [];
       inputRef.value?.focus();
     };
 
     const select = (stock: IStocks) => {
       selectedStock.value = stock;
-      query.value = stock.companyName;
+      query.value = stock.companyName || stock.symbol;
       close();
     };
 
@@ -213,7 +278,7 @@ export default defineComponent({
       if (!isOpen.value) isOpen.value = true;
       activeIndex.value = Math.min(
         activeIndex.value + 1,
-        filteredStocks.value.length - 1
+        allResults.value.length - 1
       );
     };
 
@@ -222,8 +287,8 @@ export default defineComponent({
     };
 
     const selectActive = () => {
-      if (activeIndex.value >= 0 && filteredStocks.value[activeIndex.value]) {
-        select(filteredStocks.value[activeIndex.value]);
+      if (activeIndex.value >= 0 && allResults.value[activeIndex.value]) {
+        select(allResults.value[activeIndex.value]);
       }
     };
 
@@ -234,6 +299,20 @@ export default defineComponent({
           params: { symbol: selectedStock.value.symbol },
         });
       }
+    };
+
+    const addToList = () => {
+      if (selectedStock.value && !isInCurrentList(selectedStock.value.symbol)) {
+        store.dispatch('fetchDataStocks', selectedStock.value.symbol);
+        selectedStock.value = null;
+        query.value = '';
+        apiResults.value = [];
+      }
+    };
+
+    const onImgError = (e: Event) => {
+      const img = e.target as HTMLImageElement;
+      img.style.display = 'none';
     };
 
     const handleGlobalKeydown = (e: KeyboardEvent) => {
@@ -273,6 +352,7 @@ export default defineComponent({
     onBeforeUnmount(() => {
       document.removeEventListener('keydown', handleGlobalKeydown);
       document.removeEventListener('mousedown', handleClickOutside);
+      if (searchTimer) clearTimeout(searchTimer);
     });
 
     return {
@@ -281,9 +361,12 @@ export default defineComponent({
       query,
       isOpen,
       isFocused,
+      isSearching,
       activeIndex,
       selectedStock,
       filteredStocks,
+      allResults,
+      isInCurrentList,
       close,
       clear,
       select,
@@ -291,6 +374,8 @@ export default defineComponent({
       navigateUp,
       selectActive,
       viewStock,
+      addToList,
+      onImgError,
     };
   },
 });
@@ -299,3 +384,4 @@ export default defineComponent({
 <style lang="scss">
 @import 'search-bar';
 </style>
+

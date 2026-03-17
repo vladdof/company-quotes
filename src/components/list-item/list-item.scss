@@ -8,14 +8,15 @@
   &__content {
     padding: 15px;
     align-self: self-start;
-    color: #1b2534;
-    box-shadow: rgba(12, 20, 39, 0.1) 0 0 1px, rgba(12, 20, 39, 0.1) 0 2px 2px;
+    color: var(--color-text-primary);
+    box-shadow: rgba(12, 20, 39, 0.08) 0 0 1px, rgba(12, 20, 39, 0.08) 0 2px 4px;
     border-radius: 20px;
+    background: var(--color-surface);
   }
 
   &__label {
     font-size: 12px;
-    color: #7e878e;
+    color: var(--color-text-secondary);
   }
 
   &__link {

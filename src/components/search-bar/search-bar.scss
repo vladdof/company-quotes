@@ -6,11 +6,11 @@
     position: relative;
     display: flex;
     align-items: center;
-    background: #fff;
+    background: var(--color-surface);
     border: 2px solid transparent;
     border-radius: 14px;
     padding: 0 16px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px var(--color-shadow);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &:focus-within {
@@ -22,7 +22,7 @@
   &__icon {
     width: 18px;
     height: 18px;
-    color: #606060;
+    color: var(--color-text-secondary);
     flex-shrink: 0;
     margin-right: 10px;
   }
@@ -34,11 +34,11 @@
     font-size: 15px;
     padding: 14px 0;
     background: transparent;
-    color: #1b2534;
+    color: var(--color-text-primary);
     font-family: 'Open Sans', sans-serif;
 
     &::placeholder {
-      color: #aab0bd;
+      color: var(--color-text-secondary);
     }
   }
 
@@ -47,15 +47,15 @@
     border: none;
     cursor: pointer;
     padding: 4px;
-    color: #606060;
+    color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     border-radius: 6px;
     transition: color 0.2s ease, background 0.2s ease;
 
     &:hover {
-      color: #1b2534;
-      background: #f0f3f7;
+      color: var(--color-text-primary);
+      background: var(--color-skeleton);
     }
 
     svg {
@@ -70,11 +70,11 @@
     justify-content: center;
     width: 22px;
     height: 22px;
-    background: #f0f3f7;
-    border: 1px solid #dde2ea;
+    background: var(--color-skeleton);
+    border: 1px solid var(--color-border);
     border-radius: 5px;
     font-size: 13px;
-    color: #606060;
+    color: var(--color-text-secondary);
     font-family: monospace;
     margin-left: 8px;
     flex-shrink: 0;
@@ -86,13 +86,14 @@
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: #fff;
+    background: var(--color-surface);
     border-radius: 14px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     overflow: hidden;
     z-index: 100;
     max-height: 300px;
     overflow-y: auto;
+    border: 1px solid var(--color-border);
   }
 
   &__item {
@@ -103,11 +104,11 @@
     transition: background 0.15s ease;
 
     &:not(:last-child) {
-      border-bottom: 1px solid #f0f3f7;
+      border-bottom: 1px solid var(--color-border);
     }
 
     &--active {
-      background: #f5f8ff;
+      background: rgba(41, 160, 245, 0.06);
     }
 
     &-image {
@@ -143,12 +144,12 @@
     &-name {
       font-size: 14px;
       font-weight: 600;
-      color: #1b2534;
+      color: var(--color-text-primary);
     }
 
     &-symbol {
       font-size: 12px;
-      color: #606060;
+      color: var(--color-text-secondary);
       margin-top: 2px;
     }
 
@@ -158,14 +159,24 @@
       color: #29a0f5;
       flex-shrink: 0;
     }
+
+    &-add {
+      font-size: 11px;
+      color: #29a0f5;
+      font-weight: 600;
+      background: rgba(41, 160, 245, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
   }
 
   &__info-panel {
     margin-top: 16px;
-    background: #fff;
+    background: var(--color-surface);
     border-radius: 20px;
     padding: 24px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px var(--color-shadow);
     animation: search-bar-slide-down 0.2s ease;
   }
 
@@ -202,7 +213,7 @@
   &__info-name {
     font-size: 20px;
     font-weight: 700;
-    color: #1b2534;
+    color: var(--color-text-primary);
     margin: 0 0 6px;
   }
 
@@ -215,8 +226,8 @@
 
   &__info-symbol {
     font-size: 13px;
-    color: #606060;
-    background: #f0f3f7;
+    color: var(--color-text-secondary);
+    background: var(--color-skeleton);
     padding: 2px 8px;
     border-radius: 6px;
     font-weight: 600;
@@ -224,7 +235,7 @@
 
   &__info-exchange {
     font-size: 13px;
-    color: #606060;
+    color: var(--color-text-secondary);
   }
 
   &__info-price {
@@ -251,7 +262,7 @@
     border: none;
     cursor: pointer;
     padding: 6px;
-    color: #606060;
+    color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     border-radius: 8px;
@@ -259,8 +270,8 @@
     flex-shrink: 0;
 
     &:hover {
-      color: #1b2534;
-      background: #f0f3f7;
+      color: var(--color-text-primary);
+      background: var(--color-skeleton);
     }
 
     svg {
@@ -271,7 +282,7 @@
 
   &__info-description {
     font-size: 14px;
-    color: #606060;
+    color: var(--color-text-secondary);
     line-height: 1.6;
     margin: 0 0 16px;
     display: -webkit-box;
@@ -296,14 +307,14 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #aab0bd;
+    color: var(--color-text-secondary);
     margin-bottom: 2px;
   }
 
   &__info-value {
     font-size: 14px;
     font-weight: 600;
-    color: #1b2534;
+    color: var(--color-text-primary);
   }
 
   &__info-website {
@@ -339,6 +350,28 @@
 
     &:hover {
       background: #1a8de0;
+    }
+
+    &--secondary {
+      background: transparent;
+      color: #29a0f5;
+      border: 2px solid #29a0f5;
+
+      &:hover {
+        background: rgba(41, 160, 245, 0.08);
+      }
+    }
+  }
+
+  &__searching {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-secondary);
+    margin-left: 4px;
+
+    svg {
+      width: 16px;
+      height: 16px;
     }
   }
 }

@@ -19,10 +19,21 @@
 
     <div class="stock-item__info">
       <div class="stock-item__cover">
-        <img :src="item.image" :alt="item.companyName" />
-        <div v-if="item.price" class="stock-item__price">${{ item.price }}</div>
+        <img :src="item.image" :alt="item.companyName" @error="onImgError" />
+        <div v-if="item.price" class="stock-item__price">${{ formatPrice(item.price) }}</div>
+        <div
+          v-if="item.changes !== undefined"
+          class="stock-item__change"
+          :class="item.changes >= 0 ? 'stock-item__change--up' : 'stock-item__change--down'"
+        >
+          <span>{{ item.changes >= 0 ? '↑' : '↓' }}</span>
+          {{ Math.abs(item.changes).toFixed(2) }}
+          <span v-if="item.changesPercentage !== undefined" class="stock-item__change-pct">
+            ({{ item.changesPercentage >= 0 ? '+' : '' }}{{ item.changesPercentage.toFixed(2) }}%)
+          </span>
+        </div>
       </div>
-      <div>
+      <div class="stock-item__meta">
         <h4 class="stock-item__title">
           {{ item.companyName }}
         </h4>
@@ -31,17 +42,28 @@
         </span>
       </div>
     </div>
+
+    <div v-if="item.sparkline && item.sparkline.length > 1" class="stock-item__sparkline">
+      <sparkline
+        :data="item.sparkline"
+        :positive="isPositive"
+        :width="80"
+        :height="32"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 
 import type { PropType } from 'vue';
 import { IStocks } from '@/models';
+import Sparkline from '../sparkline/sparkline.vue';
 
 export default defineComponent({
   name: 'stock-item',
+  components: { Sparkline },
   emits: ['toggleFavorite'],
   props: {
     item: {
@@ -52,6 +74,22 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  setup(props) {
+    const isPositive = computed(() => (props.item.changes ?? 0) >= 0);
+
+    const formatPrice = (price: string | number) => {
+      const num = parseFloat(String(price));
+      if (isNaN(num)) return price;
+      return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    const onImgError = (e: Event) => {
+      const img = e.target as HTMLImageElement;
+      img.style.display = 'none';
+    };
+
+    return { isPositive, formatPrice, onImgError };
   },
 });
 </script>
